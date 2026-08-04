@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayZone | Best Free Online Games & Gaming Lobby</title>
+    <!-- Google Fonts (Poppins) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Main Website CSS & Auth Modal CSS Overrides -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fili.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3079753025663876" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- Unified Custom Notification Popup -->
+<div id="pz-notification" class="pz-notification">
+    <div class="pz-notif-content">
+        <i id="pz-notif-icon" class="fas fa-exclamation-triangle"></i>
+        <span id="pz-notif-message">Alert Message</span>
+    </div>
+</div>
+
+<!-- INTEGRATED LOGIN & REGISTER MODAL -->
+<div id="pz-auth-overlay" class="pz-auth-overlay hidden">
+    <div class="pz-auth-modal">
+        <!-- Close Button (X) - Fixed with clickability patch -->
+        <button type="button" class="pz-close-modal-btn" onclick="closeAuthModal()" aria-label="Close modal" style="z-index: 9999; cursor: pointer; pointer-events: auto;">&times;</button>
+
+        <!-- Logo Section -->
+        <div class="pz-logo-container">
+            <h1 class="pz-logo-text">PLAY<span>ZONE</span></h1>
+            <p class="pz-tagline">SECURE GAMING ACCESS</p>
+        </div>
+
+        <!-- Tabs Section -->
+        <div class="pz-tabs">
+            <button id="tab-login" class="pz-tab active" onclick="switchAuthTab('login')">LOGIN</button>
+            <button id="tab-reg" class="pz-tab" onclick="switchAuthTab('reg')">REGISTER</button>
+        </div>
+
+        <div class="pz-form-body">
+            
+            <!-- 1. LOGIN SECTION -->
+            <div id="login-section" class="pz-form-pane">
+                <div class="pz-input-group">
+                    <label><i class="fas fa-envelope"></i> EMAIL ADDRESS</label>
+                    <input type="email" id="log-email" placeholder="enter your email">
+                </div>
+                
+                <div class="pz-input-group">
+                    <label><i class="fas fa-lock"></i> PASSWORD</label>
+                    <div class="pz-pass-wrapper">
+                        <input type="password" id="log-pass" placeholder="••••••••">
+                        <i class="fas fa-eye pz-toggle-eye" onclick="togglePass('log-pass', this)" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+
+                <div class="pz-extra-links">
+                    <label class="pz-remember">
+                        <input type="checkbox"> Remember Me
+                    </label>
+                    <a href="javascript:void(0)" class="pz-forgot">Forgot Password?</a>
+                </div>
+
+                <!-- Partner Link inside Login Section -->
+                <div class="pz-partner-container">
+                    <a href="javascript:void(0)" class="pz-partner-link" onclick="switchAuthTab('partner')">Become a Partner</a>
+                </div>
+
+                <button class="pz-btn-primary" onclick="handleLogin()">LOGIN NOW</button>
+            </div>
+
+            <!-- 2. REGISTRATION STEP 1 -->
+            <div id="reg-step-1" class="pz-form-pane hidden">
+                <div class="pz-row">
+                    <div class="pz-input-group">
+                        <label>FIRST NAME</label>
+                        <input type="text" id="fname" placeholder="John">
+                    </div>
+                    <div class="pz-input-group">
+                        <label>LAST NAME</label>
+                        <input type="text" id="lname" placeholder="Doe">
+                    </div>
+                </div>
+                
+                <div class="pz-input-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="reg-email" placeholder="example@mail.com">
+                </div>
+
+                <div class="pz-input-group">
+                    <label>CREATE PASSWORD</label>
+                    <div class="pz-pass-wrapper">
+                        <input type="password" id="reg-pass" oninput="validatePassword()" placeholder="min 8 characters">
+                        <i class="fas fa-eye pz-toggle-eye" onclick="togglePass('reg-pass', this)" style="cursor: pointer;"></i>
+                    </div>
+                    <!-- Password Checklist -->
+                    <div class="pz-checklist">
+                        <span id="c-length" class="check-item"><i class="fas fa-circle"></i> 8+ Char</span>
+                        <span id="c-upper" class="check-item"><i class="fas fa-circle"></i> Upper</span>
+                        <span id="c-number" class="check-item"><i class="fas fa-circle"></i> Number</span>
+                        <span id="c-special" class="check-item"><i class="fas fa-circle"></i> Special</span>
+                    </div>
+                </div>
+
+                <!-- Referral Code (Optional) -->
+                <div class="pz-input-group">
+                    <label><i class="fas fa-gift"></i> REFERRAL CODE (OPTIONAL)</label>
+                    <input type="text" id="reg-ref-code" placeholder="Enter referral code">
+                </div>
+
+                <!-- Partner Link inside Registration Step 1 -->
+                <div class="pz-partner-container">
+                    <a href="javascript:void(0)" class="pz-partner-link" onclick="switchAuthTab('partner')">Become a Partner</a>
+                </div>
+
+                <button class="pz-btn-next" onclick="goToStep(2)">NEXT STEP <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <!-- 3. REGISTRATION STEP 2 (Verification) -->
+            <div id="reg-step-2" class="pz-form-pane hidden">
+                <div class="pz-input-group">
+                    <label>DATE OF BIRTH</label>
+                    <input type="date" id="dob" class="pz-date-input">
+                </div>
+
+                <div class="pz-input-group">
+                    <label>ID DOCUMENT TYPE</label>
+                    <select id="doc-type" class="pz-select">
+                        <option value="" disabled selected>-- Select --</option>
+                        <option value="id">National ID</option>
+                        <option value="passport">Passport</option>
+                        <option value="license">Driver's License</option>
+                    </select>
+                </div>
+
+                <!-- File Upload Container with Image Preview -->
+                <div class="pz-upload-area">
+                    <label for="id-card" class="pz-file-label" id="pz-file-label" style="cursor: pointer;">
+                        <i class="fas fa-id-card"></i>
+                        <span>UPLOAD ID PHOTO</span>
+                        <input type="file" id="id-card" hidden accept="image/*">
+                    </label>
+                    
+                    <!-- Preview Container -->
+                    <div id="pz-file-preview-container" class="pz-file-preview hidden">
+                        <img id="pz-file-preview-img" src="" alt="ID Preview">
+                        <button type="button" id="pz-remove-file-btn" class="pz-remove-file-btn" onclick="removeUploadedFile()" style="z-index: 9999; cursor: pointer; pointer-events: auto;">&times;</button>
+                    </div>
+                </div>
+
+                <div class="pz-camera-section">
+                    <label>LIVE VERIFICATION</label>
+                    <div class="pz-video-container">
+                        <video id="video" autoplay playsinline muted></video>
+                        <div id="cam-overlay"><i class="fas fa-user-shield"></i></div>
+                    </div>
+                    <button class="pz-cam-btn" onclick="startCamera()">
+                        <i class="fas fa-camera"></i> START CAMERA
+                    </button>
+                </div>
+
+                <div class="pz-action-row">
+                    <button class="pz-btn-back" onclick="goToStep(1)">BACK</button>
+                    <button class="pz-btn-finish" onclick="finishRegistration()">COMPLETE</button>
+                </div>
+            </div>
+
+            <!-- 4. PARTNER APPLICATION SECTION -->
+            <div id="partner-section" class="pz-form-pane hidden">
+                <h3 class="pz-partner-title"><i class="fas fa-handshake"></i> Partner Application</h3>
+                
+                <div class="pz-row">
+                    <div class="pz-input-group">
+                        <label>FIRST NAME</label>
+                        <input type="text" id="part-fname" placeholder="Enter first name">
+                    </div>
+                    <div class="pz-input-group">
+                        <label>LAST NAME</label>
+                        <input type="text" id="part-lname" placeholder="Enter last name">
+                    </div>
+                </div>
+
+                <div class="pz-input-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" id="part-email" placeholder="partner@mail.com">
+                </div>
+
+                <div class="pz-input-group">
+                    <label>PASSWORD</label>
+                    <div class="pz-pass-wrapper">
+                        <input type="password" id="part-pass" placeholder="••••••••">
+                        <i class="fas fa-eye pz-toggle-eye" onclick="togglePass('part-pass', this)" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+
+                <div class="pz-input-group">
+                    <label>SELECT PLATFORM</label>
+                    <select id="part-platform" class="pz-select">
+                        <option value="" disabled selected>-- Select Platform --</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="instagram">Instagram</option>
+                    </select>
+                </div>
+
+                <div class="pz-input-group">
+                    <label>NUMBER OF FOLLOWERS</label>
+                    <input type="number" id="part-followers" placeholder="e.g. 10000">
+                </div>
+
+                <!-- HOW TO PARTNER TRIGGER BUTTON -->
+                <div class="pz-input-group">
+                    <label>PARTNER REQUIREMENTS & TERMS</label>
+                    <button type="button" id="pz-terms-trigger" class="pz-terms-trigger-btn" onclick="switchAuthTab('how-to-partner')">
+                        <i id="pz-terms-icon" class="fas fa-exclamation-circle"></i> <span id="pz-terms-text">CLICK ME (REQUIRED)</span>
+                    </button>
+                </div>
+
+                <div class="pz-action-row">
+                    <button class="pz-btn-back" onclick="switchAuthTab('login')">BACK</button>
+                    <button class="pz-btn-finish" onclick="submitPartnerApplication()">SUBMIT REQUEST</button>
+                </div>
+            </div>
+
+            <!-- 5. HOW TO PARTNER (INSTRUCTION DIMENSION) -->
+            <div id="how-to-partner-section" class="pz-form-pane hidden">
+                <h3 class="pz-partner-title"><i class="fas fa-book-open"></i> How To Partner</h3>
+                
+                <div class="pz-terms-scrollbox">
+                    <p><strong>Welcome to the PlayZone Partner Network!</strong></p>
+                    <p>By becoming a partner, you agree to promote our secure gaming platform to your followers in a creative and responsible way.</p>
+                    
+                    <p><strong>1. Content Guidelines:</strong></p>
+                    <p>You must not create offensive, misleading, or harmful content. Ensure all game shares are transparent and follow platform rules.</p>
+                    
+                    <p><strong>2. Engagement Metrics:</strong></p>
+                    <p>Your followers count will be verified. We look for authentic communities on TikTok, YouTube, and Instagram. Fake bot followers will lead to instant disqualification.</p>
+
+                    <p><strong>3. Reward Sharing:</strong></p>
+                    <p>Partners receive exclusive referral bonuses and direct support from the PlayZone team. Earnings are calculated based on your referral link conversions.</p>
+                </div>
+
+                <button class="pz-btn-finish" onclick="acceptPartnerTerms()"><i class="fas fa-check"></i> I HAVE READ AND AGREE</button>
+            </div>
+
+        </div> <!-- end pz-form-body -->
+    </div> <!-- end pz-auth-modal -->
+</div> <!-- end pz-auth-overlay -->
+
+<!-- MAIN WEBSITE HEADER -->
+<header>
+    <div class="logo" onclick="location.reload()">PLAY<span>ZONE</span></div>
+    
+    <div class="user-stats">
+        <!-- XP Progress Bar -->
+        <div class="xp-progress-container" style="display: flex; flex-direction: column; width: 120px; margin-right: 15px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--pz-gray); margin-bottom: 3px;">
+                <span>LV.<span id="user-level">1</span></span>
+                <span><span id="xp-current-val">0</span>/<span id="xp-needed-val">1000</span> XP</span>
+            </div>
+            <div style="width: 100%; height: 6px; background: var(--pz-border); border-radius: 3px; overflow: hidden;">
+                <div id="xp-fill" style="width: 0%; height: 100%; background: var(--pz-cyan); transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+
+        <!-- Sparks Counter -->
+        <div class="stat-box" onclick="triggerAuthGate('Sparks Hub')" style="cursor: pointer;">
+            <i class="fas fa-bolt" style="color:#f1c40f"></i> 
+            <span id="spark-balance">0</span>
+        </div>
+        
+        <!-- Header Avatar -->
+        <div class="header-avatar-wrapper">
+            <img id="header-avatar" 
+                 src="https://ui-avatars.com/api/?name=P&background=8e44ad&color=fff" 
+                 onclick="openProfile()" 
+                 alt="Profile"
+                 style="border-radius: 6px; cursor: pointer; width: 42px; height: 42px; object-fit: cover; border: 2px solid var(--pz-cyan, #00f2ff);">
+        </div>
+    </div>
+</header>
+
+<!-- NAVIGATION BAR -->
+<nav class="main-nav">
+    <div class="nav-buttons">
+        <button class="nav-btn active" id="btn-home" onclick="filterGames('home')"><i class="fas fa-home"></i> HOME</button>
+        <button class="nav-btn" id="btn-spark" onclick="filterGames('spark')"><i class="fas fa-bolt"></i> SPARK</button>
+        <button class="nav-btn" id="btn-best" onclick="filterGames('best')"><i class="fas fa-star"></i> BEST</button>
+        <button class="nav-btn" id="btn-friends" onclick="filterGames('friends')"><i class="fas fa-users"></i> LOBBY</button>
+        <button class="nav-btn" id="btn-top100" onclick="toggleModal('leaderboardModal')"><i class="fas fa-trophy"></i> TOP 100</button>
+    </div>
+    
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search games..." oninput="searchGames()">
+    </div>
+</nav>
+
+<main class="container">
+    <!-- 1. Games Grid Section -->
+    <div id="game-grid" class="game-grid">
+        <!-- Games are loaded dynamically via JS -->
+    </div>
+
+    <!-- 2. Integrated PUBG Squad Lobby Container -->
+    <div id="pubg-lobby-section" class="pubg-container hidden" style="width: 100%; max-width: 100%; padding: 0; margin-top: 10px;">
+        <div class="pubg-card" style="border-radius: 12px; overflow: hidden; border: 2px solid var(--pubg-border, #252d3a);">
+            
+            <!-- Lobby Header Area -->
+            <div class="pubg-header">
+                <div class="pubg-title-section">
+                    <h2>PLAY<span>ZONE</span></h2>
+                    <span class="pubg-subtitle">SQUAD LOBBY</span>
+                    <!-- Spark Balance Display -->
+                    <div class="pubg-balance-display">
+                        <img src="images/game.png" alt="Spark" class="pubg-spark-icon" style="width: 20px; height: 20px;" onerror="this.src='https://ui-avatars.com/api/?name=S&background=f1c40f&color=000'">
+                        <span id="user-sparks">0</span>
+                    </div>
+                </div>
+
+                <!-- Search by ID Section -->
+                <div class="pubg-search-box">
+                    <input type="text" id="pubg-search-id" placeholder="SEARCH BY PLAYER ID...">
+                    <button onclick="searchPlayerByID()"><i class="fas fa-search"></i></button>
+                </div>
+
+                <!-- Header Controls Area -->
+                <div class="pubg-header-controls">
+                    <!-- My Inventory/Exchange Trigger -->
+                    <div class="pubg-bell-container" onclick="toggleInventoryBox()" style="cursor: pointer;">
+                        <i class="fas fa-briefcase pubg-bell-icon"></i>
+                        <span class="pubg-bell-badge" id="inv-count">0</span>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <div class="pubg-bell-container" onclick="toggleRequestsBox()" style="cursor: pointer;">
+                        <i class="fas fa-bell pubg-bell-icon"></i>
+                        <span class="pubg-bell-badge" id="request-count">2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lobby Body Area -->
+            <div class="pubg-body">
+                
+                <!-- Left Column: Squad Slot Cards -->
+                <div class="pubg-friends-list">
+                    <div class="pubg-list-title">SQUAD LOBBY SLOTS (4)</div>
+                    
+                    <!-- SLOT 1 -->
+                    <div class="pubg-friend-item occupied active" id="pubg-slot-1">
+                        <div class="pubg-friend-card-content" onclick="selectFriend('SNIPER_ACE', 'online', 'level 72', 'pubg-slot-1')" style="cursor: pointer;">
+                            <div class="pubg-avatar-wrapper">
+                                <div class="pubg-avatar-placeholder"><i class="fas fa-user-ninja"></i></div>
+                                <span class="pubg-status online"></span>
+                            </div>
+                            <div class="pubg-friend-info">
+                                <span class="pubg-friend-name">SNIPER_ACE</span>
+                                <span class="pubg-friend-status">Lvl 72 • In Lobby</span>
+                            </div>
+                        </div>
+                        <button class="pubg-remove-friend-btn" onclick="removeFriendFromSlot('pubg-slot-1')" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                    </div>
+
+                    <!-- SLOT 2 -->
+                    <div class="pubg-friend-item occupied" id="pubg-slot-2">
+                        <div class="pubg-friend-card-content" onclick="selectFriend('SHADOW_PRO', 'online', 'level 65', 'pubg-slot-2')" style="cursor: pointer;">
+                            <div class="pubg-avatar-wrapper">
+                                <div class="pubg-avatar-placeholder"><i class="fas fa-user-astronaut"></i></div>
+                                <span class="pubg-status online"></span>
+                            </div>
+                            <div class="pubg-friend-info">
+                                <span class="pubg-friend-name">SHADOW_PRO</span>
+                                <span class="pubg-friend-status">Lvl 65 • Ready</span>
+                            </div>
+                        </div>
+                        <button class="pubg-remove-friend-btn" onclick="removeFriendFromSlot('pubg-slot-2')" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                    </div>
+
+                    <!-- SLOT 3 -->
+                    <div class="pubg-friend-item occupied" id="pubg-slot-3">
+                        <div class="pubg-friend-card-content" onclick="selectFriend('GHOST_KILLER', 'offline', 'level 48', 'pubg-slot-3')" style="cursor: pointer;">
+                            <div class="pubg-avatar-wrapper">
+                                <div class="pubg-avatar-placeholder"><i class="fas fa-user-secret"></i></div>
+                                <span class="pubg-status offline"></span>
+                            </div>
+                            <div class="pubg-friend-info">
+                                <span class="pubg-friend-name">GHOST_KILLER</span>
+                                <span class="pubg-friend-status">Offline</span>
+                            </div>
+                        </div>
+                        <button class="pubg-remove-friend-btn" onclick="removeFriendFromSlot('pubg-slot-3')" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                    </div>
+
+                    <!-- SLOT 4 -->
+                    <div class="pubg-friend-item occupied" id="pubg-slot-4">
+                        <div class="pubg-friend-card-content" onclick="selectFriend('ACE_PLAYER', 'online', 'level 80', 'pubg-slot-4')" style="cursor: pointer;">
+                            <div class="pubg-avatar-wrapper">
+                                <div class="pubg-avatar-placeholder"><i class="fas fa-user-shield"></i></div>
+                                <span class="pubg-status online"></span>
+                            </div>
+                            <div class="pubg-friend-info">
+                                <span class="pubg-friend-name">ACE_PLAYER</span>
+                                <span class="pubg-friend-status">Lvl 80 • Playing</span>
+                            </div>
+                        </div>
+                        <button class="pubg-remove-friend-btn" onclick="removeFriendFromSlot('pubg-slot-4')" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                    </div>
+                </div> <!-- End Left Column -->
+
+                <!-- Right Column: Embedded Chat & Profile Detail Panel -->
+                <div class="pubg-details-pane" style="position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 55%; min-height: 380px;">
+                    
+                    <!-- Profile Card -->
+                    <div class="pubg-detail-card" id="selected-profile" style="width: 100%;">
+                        <div class="pubg-detail-header">
+                            <div class="pubg-large-avatar" id="detail-avatar">
+                                <i class="fas fa-user-ninja"></i>
+                            </div>
+                            <h3 id="detail-name">SNIPER_ACE</h3>
+                            <p id="detail-level" class="pubg-gold-text">LEVEL 72</p>
+                            <span id="detail-status" class="pubg-status-text">ACTIVE IN LOBBY</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="pubg-action-buttons">
+                            <button class="pubg-btn-action pubg-chat-btn" id="action-chat-btn" onclick="openChatBox()">
+                                <i class="fas fa-comments"></i> CHAT
+                            </button>
+                            <button class="pubg-btn-action pubg-gift-btn" id="action-gift-btn" onclick="openGiftShop()">
+                                <i class="fas fa-gift"></i> SEND GIFT
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Chat Box -->
+                    <div id="pubg-chat-box" class="pubg-chat-box hidden" style="position: relative; width: 100%; height: 100%; min-height: 340px; margin: 0; box-shadow: none; border-radius: 8px; border: 1px solid var(--pz-cyan);">
+                        <div class="pubg-chat-header">
+                            <span>CHAT: <strong id="chat-partner-name">SNIPER_ACE</strong></span>
+                            <button type="button" class="pubg-popup-close-btn" onclick="closeChatBox()" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                        </div>
+                        <div class="pubg-chat-messages" id="chat-messages-container" style="height: 200px;">
+                            <div class="pubg-msg system">System: Connection secure. Start chatting!</div>
+                        </div>
+                        <div class="pubg-chat-input-area">
+                            <input type="text" id="chat-message-input" placeholder="Type message...">
+                            <button type="button" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+
+                </div> <!-- End Right Column -->
+
+            </div> <!-- End pubg-body -->
+
+            <!-- 3. POPUP: Friend Requests -->
+            <div id="pubg-requests-box" class="pubg-requests-box hidden" style="top: 75px; right: 25px;">
+                <div class="pubg-requests-header">
+                    <span>INCOMING REQUESTS</span>
+                    <button type="button" class="pubg-popup-close-btn" onclick="toggleRequestsBox()" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                </div>
+                <div class="pubg-requests-list">
+                    <div class="pubg-request-item" id="req-item-1">
+                        <span>X_KILLER_X (Lvl 50)</span>
+                        <div class="pubg-req-actions">
+                            <button type="button" class="accept" onclick="acceptRequest('req-item-1', 'X_KILLER_X')"><i class="fas fa-check"></i></button>
+                            <button type="button" class="decline" onclick="declineRequest('req-item-1')">&times;</button>
+                        </div>
+                    </div>
+                    <div class="pubg-request-item" id="req-item-2">
+                        <span>LEGEND_GAMER (Lvl 61)</span>
+                        <div class="pubg-req-actions">
+                            <button type="button" class="accept" onclick="acceptRequest('req-item-2', 'LEGEND_GAMER')"><i class="fas fa-check"></i></button>
+                            <button type="button" class="decline" onclick="declineRequest('req-item-2')">&times;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. POPUP: Gift Shop Modal -->
+            <div id="pubg-gift-shop" class="pubg-gift-shop hidden">
+                <div class="pubg-shop-header">
+                    <span>GIFT SHOP: SEND TO <strong id="gift-partner-name">SNIPER_ACE</strong></span>
+                    <button type="button" class="pubg-popup-close-btn" onclick="closeGiftShop()" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                </div>
+                
+                <div class="pubg-shop-content">
+                    <div class="pubg-shop-item boss-tier">
+                        <img src="images/phoenix.jpg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Gold Shadow Phoenix</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 50,000</span>
+                        <button type="button" onclick="buyAndSendGift('Gold Shadow Phoenix', 50000, 'images/phoenix.jpg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item mythic-tier">
+                        <img src="images/monkiy_2.webp" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Cosmic Gorilla</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 19,037</span>
+                        <button type="button" onclick="buyAndSendGift('Cosmic Gorilla', 19037, 'images/monkiy_2.webp')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item mythic-tier">
+                        <img src="images/monkiy1.jpeg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Volcanic Gorilla</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 16,568</span>
+                        <button type="button" onclick="buyAndSendGift('Volcanic Gorilla', 16568, 'images/monkiy1.jpeg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item legendary-tier">
+                        <img src="images/lion7.webp" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Neon Astral Lion</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 11,111</span>
+                        <button type="button" onclick="buyAndSendGift('Neon Astral Lion', 11111, 'images/lion7.webp')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item legendary-tier">
+                        <img src="images/lion_3.jpg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Sun-King Lion</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 8,889</span>
+                        <button type="button" onclick="buyAndSendGift('Sun-King Lion', 8889, 'images/lion_3.jpg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item mythic-tier">
+                        <img src="images/tayger_1.jpg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Tempest Tiger</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 25,000</span>
+                        <button type="button" onclick="buyAndSendGift('Tempest Tiger', 25000, 'images/tayger_1.jpg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item mythic-tier">
+                        <img src="images/tayger2.jpeg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Magma Tiger</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 22,000</span>
+                        <button type="button" onclick="buyAndSendGift('Magma Tiger', 22000, 'images/tayger2.jpeg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item legendary-tier">
+                        <img src="images/eagle.jpg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Sky-Lord Eagle</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 4,283</span>
+                        <button type="button" onclick="buyAndSendGift('Sky-Lord Eagle', 4283, 'images/eagle.jpg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item legendary-tier">
+                        <img src="images/eagle1.jpeg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Solar Flame Eagle</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 3,333</span>
+                        <button type="button" onclick="buyAndSendGift('Solar Flame Eagle', 3333, 'images/eagle1.jpeg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item rare-tier">
+                        <img src="images/fox22.jpg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Spectral Fox</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 2,689</span>
+                        <button type="button" onclick="buyAndSendGift('Spectral Fox', 2689, 'images/fox22.jpg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item rare-tier">
+                        <img src="images/fox11.avif" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Sage Fox</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 1,970</span>
+                        <button type="button" onclick="buyAndSendGift('Sage Fox', 1970, 'images/fox11.avif')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item rare-tier">
+                        <img src="images/rabit1.jpeg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Void Rabbit</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 1,111</span>
+                        <button type="button" onclick="buyAndSendGift('Void Rabbit', 1111, 'images/rabit1.jpeg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item rare-tier">
+                        <img src="images/rabit2.jpg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Dash Rabbit</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 833</span>
+                        <button type="button" onclick="buyAndSendGift('Dash Rabbit', 833, 'images/rabit2.jpg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item common-tier">
+                        <img src="images/rat1.jpeg" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Frost Rat</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 444</span>
+                        <button type="button" onclick="buyAndSendGift('Frost Rat', 444, 'images/rat1.jpeg')">SEND</button>
+                    </div>
+
+                    <div class="pubg-shop-item common-tier">
+                        <img src="images/rat2.webp" class="pubg-shop-item-img">
+                        <span class="pubg-shop-item-title">Lava Rat</span>
+                        <span class="pubg-shop-item-price"><img src="images/game.png" class="pubg-spark-sm" style="width: 14px; height: 14px;"> 323</span>
+                        <button type="button" onclick="buyAndSendGift('Lava Rat', 323, 'images/rat2.webp')">SEND</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. My Inventory & Exchange Modal -->
+            <div id="pubg-inventory-box" class="pubg-requests-box hidden" style="width: 360px; min-height: 280px; top: 75px; right: 80px; border-color: var(--pz-cyan);">
+                <div class="pubg-requests-header" style="background: rgba(0, 242, 255, 0.08); border-bottom-color: var(--pz-cyan);">
+                    <span>MY INVENTORY & EXCHANGE</span>
+                    <button type="button" class="pubg-popup-close-btn" onclick="toggleInventoryBox()" style="z-index: 10; cursor: pointer; pointer-events: auto;">&times;</button>
+                </div>
+                
+                <button class="pubg-inventory-sim-btn" onclick="simulateReceiveGift()">
+                    <i class="fas fa-gift"></i> SIMULATE RECEIVING GIFT
+                </button>
+
+                <div class="pubg-requests-list" id="pubg-inventory-list">
+                    <div class="pubg-empty-inventory" id="inv-empty-message">Your inventory is empty. Click the simulated gift button above to test!</div>
+                </div>
+            </div>
+
+        </div> <!-- End pubg-card -->
+    </div> <!-- End pubg-container -->
+</main> <!-- End Container -->
+<!-- ==========================================
+     NEW PUBG STYLE PROFILE MODAL
+     ========================================== -->
+<div id="pubg-profile-modal" class="pubg-overlay">
+    <div class="pubg-main-container">
+        <!-- Close Button (X) - Fixed with clickability patch -->
+        <button class="pubg-close-x" onclick="closeProfile()" style="z-index: 9999; cursor: pointer; pointer-events: auto;">×</button>
+
+        <div class="pubg-profile-wrapper">
+            <div class="pubg-content-area">
+                
+                <div class="pubg-header-section">
+                    <div class="pubg-photo-square">
+                        <img id="p-user-img" src="https://ui-avatars.com/api/?name=U&background=1a1a1a&color=fff">
+                        <div class="p-lvl-badge">LV.<span id="p-lvl-top">1</span></div>
+                        
+                        <label for="p-upload-input" class="p-edit-photo-btn" style="cursor: pointer;">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="p-upload-input" hidden accept="image/*" onchange="handleProfilePhoto(event)">
+                    </div>
+                    
+                    <div class="pubg-name-stats">
+                        <div class="p-name-row">
+                            <h2 id="p-username">PLAYER_NAME</h2>
+                            <i class="fas fa-pen-square p-edit-name-btn" onclick="handleNameChange()" style="cursor: pointer;"></i>
+                        </div>
+                        
+                        <div class="p-id-row">
+                            <span class="p-id-text">ID:<span id="p-user-id">12345678</span></span>
+                            <i class="far fa-copy p-copy-btn" onclick="copyPlayerID()" title="Copy Player ID" style="cursor: pointer;"></i>
+                        </div>
+                        
+                        <div class="p-xp-section">
+                            <div class="p-xp-bar-wrapper">
+                                <div id="p-xp-fill-inner" class="p-xp-fill"></div>
+                            </div>
+                            <div class="p-xp-info-text">
+                                <span id="p-xp-remaining-msg">710 more to reach Lv. 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pubg-tab-content" class="pubg-tab-body">
+                    <!-- BASIC INFO TAB -->
+                    <div id="tab-basic-info" class="tab-pane active">
+                        <div class="pubg-rank-grid">
+                            <div class="rank-card-mini">
+                                <div class="rank-circle level-c"><i class="fas fa-award"></i></div>
+                                <div class="rank-info"><small>LEVEL</small><h3 id="p-rank-lvl">1</h3></div>
+                            </div>
+                            <div class="rank-card-mini">
+                                <div class="rank-circle sparks-c"><img src="images/game.png" class="mini-spark-img" onerror="this.src='https://ui-avatars.com/api/?name=S&background=f1c40f&color=000'"></div>
+                                <div class="rank-info"><small>SPARKS</small><h3 id="p-rank-sparks">0</h3></div>
+                            </div>
+                            <div class="rank-card-mini">
+                                <div class="rank-circle empire-c"><i class="fas fa-crown"></i></div>
+                                <div class="rank-info"><small>EMPIRE</small><h3 id="p-rank-empire">0</h3></div>
+                            </div>
+                        </div>
+
+                        <div class="pubg-footer-row">
+                            <div class="f-box">
+                                <span class="f-label">ACCOUNT AGE</span>
+                                <strong id="p-played-time" class="f-value">1 MONTH</strong>
+                            </div>
+                            <div class="f-box">
+                                <span class="f-label">MONTHLY RATING</span>
+                                <strong id="p-month-rating" class="f-value">0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STATISTICS TAB -->
+                    <div id="tab-statistics" class="tab-pane">
+                        <div class="stats-header-simple"><span class="category-label">SPARK CATEGORY</span></div>
+                        <div class="stats-spark-grid">
+                            <div class="s-mini-card"><span>PLAYED</span><h2 id="st-played">0</h2></div>
+                            <div class="s-mini-card"><span>WINS</span><h2 id="st-wins">0</h2></div>
+                            <div class="s-mini-card"><span>WIN RATIO</span><h2 class="cyan-text"><span id="st-ratio">0</span>%</h2></div>
+                        </div>
+                        <div class="top-games-section">
+                            <h4><i class="fas fa-fire"></i> TOP 4 MOST PLAYED GAMES</h4>
+                            <div id="top-games-list" class="game-ranking-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- SPARK HUB TAB (Withdraw/Transfer/Buy) -->
+                    <div id="tab-career" class="tab-pane">
+                        <div class="spark-nav-buttons">
+                            <button class="s-nav-btn active" onclick="switchSparkView('buy')"><i class="fas fa-shopping-cart"></i> BUY</button>
+                            <button class="s-nav-btn" onclick="switchSparkView('withdraw')"><i class="fas fa-wallet"></i> WITHDRAW</button>
+                            <button class="s-nav-btn" onclick="switchSparkView('exchange')"><i class="fas fa-paper-plane"></i> TRANSFER</button>
+                        </div>
+                        <div class="spark-main-content">
+                            <!-- Buy Sparks View -->
+                            <div id="spark-buy-view" class="spark-sub-view active">
+                                <div class="shop-list" id="shop-items-container"></div>
+                            </div>
+
+                            <!-- Withdraw Sparks View -->
+                            <div id="spark-withdraw-view" class="spark-sub-view">
+                                <div class="binance-form">
+                                    <div class="b-input-group">
+                                        <label>Address</label>
+                                        <input type="text" id="w-address" placeholder="Paste wallet address">
+                                    </div>
+                                    <div class="b-input-group">
+                                        <label>Network</label>
+                                        <select id="w-network">
+                                            <option value="">Select Network</option>
+                                            <option value="bep20">BNB Smart Chain (BEP20)</option>
+                                            <option value="trc20">TRON (TRC20)</option>
+                                        </select>
+                                    </div>
+                                    <div class="b-input-group">
+                                        <label>Amount (Min 300 Sparks)</label>
+                                        <div style="position: relative;">
+                                            <input type="number" id="w-amount" placeholder="Min 300">
+                                            <button type="button" onclick="maxWithdraw()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--pz-cyan); border: none; color: #000; padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">MAX</button>
+                                        </div>
+                                    </div>
+                                    <button class="withdraw-main-btn" onclick="processWithdraw()">Withdraw</button>
+                                </div>
+                            </div>
+
+                            <!-- Transfer Sparks View -->
+                            <div id="spark-exchange-view" class="spark-sub-view">
+                                <div class="transfer-box">
+                                    <div class="b-input-group">
+                                        <label>Receiver Player ID</label>
+                                        <input type="text" id="t-id" placeholder="Enter ID">
+                                    </div>
+                                    <div class="b-input-group">
+                                        <label>Amount</label>
+                                        <input type="number" id="t-amount" placeholder="0.00">
+                                    </div>
+                                    <button class="transfer-main-btn" onclick="processTransfer()">Send Sparks</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Profile Sidebar Tabs (ተመሓይሹ ዝተተክአ) -->
+<div class="pubg-sidebar" style="display: flex; flex-direction: column; justify-content: flex-start; height: 100%;">
+    <div class="sidebar-title">DATA</div>
+    <button class="side-btn active" onclick="switchTab('basic-info')">BASIC INFO</button>
+    <button class="side-btn" onclick="switchTab('statistics')">STATISTICS</button>
+    <button class="side-btn" onclick="switchTab('career')">SPARK HUB</button>
+    
+    <!-- ADDED LOGOUT BUTTON (ዝተወሰኸ ቀይሕ ናይ ሎግ-ኣውት መልቀብ) -->
+    <button class="side-btn p-logout-btn" onclick="handleUserLogout(true)" style="color: #ff4d4d !important; margin-top: auto; border-top: 1px solid rgba(255, 77, 77, 0.2); font-weight: bold; cursor: pointer;">
+        <i class="fas fa-sign-out-alt"></i> LOGOUT
+    </button>
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     3. FLOATING ACTION BUTTONS (FAB)
+     ========================================== -->
+<div class="fab-container">
+    <button class="fab fab-missions" onclick="toggleModal('missionsModal')">
+        <i class="fas fa-list-ul"></i> MISSIONS
+        <span id="mission-notification" class="red-dot" style="display:none;"></span>
+    </button>
+    <button id="daily-claim-btn" class="fab fab-claim" onclick="claimDailyReward()">
+        <i class="fas fa-calendar-check"></i> DAILY CLAIM
+    </button>
+    <button class="fab fab-ads" onclick="watchAdsXP()">
+        <i class="fas fa-play-circle"></i> WATCH AD (+300 XP)
+    </button>
+</div>
+
+<!-- ==========================================
+     4. ADDITIONAL MODALS
+     ========================================== -->
+
+<!-- LEADERBOARD MODAL -->
+<div id="leaderboardModal" class="modal-overlay" style="display: none;">
+    <div class="auth-card leaderboard-box">
+        <div class="modal-header">
+            <h2><i class="fas fa-trophy" style="color:gold"></i> Top 100 Legends</h2>
+            <!-- Close Button (X) - Fixed with clickability patch -->
+            <button class="close-modal" onclick="toggleModal('leaderboardModal')" style="z-index: 9999; cursor: pointer; pointer-events: auto;">×</button>
+        </div>
+        <div id="leader-list" class="leaderboard-scroll"></div>
+    </div>
+</div>
+
+<!-- MISSIONS MODAL -->
+<div id="missionsModal" class="modal-overlay" style="display: none;">
+    <div class="auth-card modern-ui mission-box">
+        <!-- Close Button (X) - Fixed with clickability patch -->
+        <button class="close-modal" onclick="toggleModal('missionsModal')" style="z-index: 9999; cursor: pointer; pointer-events: auto;">×</button>
+        <div class="mission-header">
+            <div class="mission-icon"><i class="fas fa-trophy"></i></div>
+            <h2>MISSION CENTER</h2>
+            <p>Complete tasks to earn Empire Score & XP</p>
+        </div>
+        <div class="mission-tabs">
+            <button class="tab-btn active" onclick="switchMissionTab('daily')">DAILY</button>
+            <button class="tab-btn" onclick="switchMissionTab('weekly')">WEEKLY</button>
+        </div>
+        <div id="mission-list" class="leaderboard-scroll"></div>
+    </div>
+</div>
+
+<!-- REWARD SUCCESS MODAL -->
+<div id="rewardModal" class="modal-overlay" style="display: none;">
+    <div class="auth-card reward-popup">
+        <div class="reward-icon-circle"><i class="fas fa-check-circle"></i></div>
+        <h2 class="reward-text">+300 XP</h2>
+        <p>REWARD CONFIRMED!</p>
+        <button class="nav-btn active" onclick="toggleModal('rewardModal')" style="margin-top:15px; width:100%;">AWESOME</button>
+    </div>
+</div>
+
+<!-- LEVEL UP MODAL -->
+<div id="levelUpModal" class="modal-overlay" style="display: none;">
+    <div class="auth-card level-up-card">
+        <div class="confetti-effect"></div>
+        <div class="level-up-badge">
+            <i class="fas fa-award"></i>
+            <span id="popup-lvl-val">10</span>
+        </div>
+        <h2 class="congrats-text">CONGRATULATIONS!</h2>
+        <p>You've reached <strong style="color:gold">LEVEL <span id="new-level-title">10</span></strong></p>
+        <button class="auth-main-btn glow-btn" onclick="toggleModal('levelUpModal')">AWESOME!</button>
+    </div>
+</div>
+
+<!-- GAME PLAYER (IFRAME) -->
+<div id="gamePlayModal" class="modal-overlay" style="display: none; padding: 0; z-index: 99999;">
+    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #000;">
+        <div style="background: #161b2a; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--purple, #a855f7); height: 50px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="color: var(--pz-cyan); font-weight: 900; letter-spacing: 1px;">PLAYZONE</span>
+                <h4 id="current-playing-title" style="margin: 0; color: white; font-size: 0.9rem;">Game Loading...</h4>
+            </div>
+            <button onclick="closeGamePlayer()" style="background: #ff4d4d; color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 900; cursor: pointer;">
+                <i class="fas fa-arrow-left"></i> BACK
+            </button>
+        </div>
+        <iframe id="global-game-iframe" src="" style="flex: 1; width: 100%; border: none;"></iframe>
+    </div>
+</div>
+
+<!-- CUSTOM GAMING DIALOG MODAL -->
+<div id="game-dialog-modal" class="modal-overlay" style="display: none; z-index: 11000;">
+    <div class="auth-card gaming-dialog" style="max-width: 400px; padding: 25px;">
+        <div class="dialog-icon-circle" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem;">
+            <i id="dialog-icon" class="fas fa-gamepad"></i>
+        </div>
+        
+        <h3 id="dialog-title" style="font-weight: 900; margin-bottom: 12px; font-size: 1.3rem; letter-spacing: 1px; text-transform: uppercase;">SYSTEM MESSAGE</h3>
+        <p id="dialog-message" style="color: #ffffff; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;"></p>
+        
+        <div id="dialog-input-wrapper" style="display: none; margin-bottom: 20px;">
+            <input type="text" id="dialog-input" style="width: 100%; background: #0d1117; border: 2px solid var(--pz-cyan); color: #fff; padding: 12px; border-radius: 8px; outline: none; font-size: 0.95rem; text-align: center;" placeholder="...">
+        </div>
+
+        <div class="dialog-buttons" style="display: flex; gap: 12px; justify-content: center;">
+            <button id="dialog-cancel-btn" class="collect-btn" style="background: #333; color: #ccc; display: none; padding: 10px 20px; border-radius: 8px; box-shadow: none;">CANCEL</button>
+            <button id="dialog-confirm-btn" class="collect-btn" style="background: var(--pz-yellow, #f1c40f); color: #000; padding: 10px 25px; border-radius: 8px; font-weight: 900; box-shadow: 0 4px 12px rgba(241, 196, 15, 0.3);">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase Config Initialization -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPJk6KGcAJDnufiyBB_It-P6fpLNcRq98",
+    authDomain: "playzone-e8c1c.firebaseapp.com",
+    projectId: "playzone-e8c1c",
+    storageBucket: "playzone-e8c1c.firebasestorage.app",
+    messagingSenderId: "887260109130",
+    appId: "1:887260109130:web:34b0745291ffc894b789b3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  window.auth = getAuth(app);
+  window.db = getFirestore(app);
+  
+  window.doc = doc;
+  window.getDoc = getDoc;
+  window.setDoc = setDoc;
+  
+  onAuthStateChanged(window.auth, (user) => {
+    if (user && typeof loadUserDataFromCloud === "function") {
+        loadUserDataFromCloud(user.uid);
+    } else {
+        if (typeof handleUserLogout === "function") {
+            handleUserLogout();
+        }
+    }
+  });
+</script>
+
+<footer style="text-align:center; padding:20px; color:#555; background: var(--pz-dark);">
+    <p>&copy; 2026 PlayZone Games | <a href="privacy.html" style="color:#888;">Privacy Policy</a></p>
+</footer>
+
+<!-- Unified Main JavaScript Code -->
+<script src="nati.js"></script>
+
+</body>
+</html>

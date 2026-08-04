@@ -1,0 +1,695 @@
+/* 1. Global Reset & Variables */
+:root {
+    --pz-cyan: #00f2ff;       /* ሰማያዊ ሕብሪ */
+    --pz-yellow: #f1c40f;     /* ብጫ ሕብሪ */
+    --pz-bg: #0d1117;         /* Dark background */
+    --pz-dark: #010409;       /* Deeper dark */
+    --pz-border: #30363d;
+    --pz-text: #ffffff;
+    --pz-gray: #8b949e;
+    --pz-red: #ff4757;        /* Warning Red */
+    --pz-green: #2ecc71;      /* Verified Green */
+    --pz-hover-speed: 0.25s;  
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0; 
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--pz-dark);
+    min-height: 100vh; /* ንሞባይል ምቹእ ንክኸውን ካብ height: 100vh ናብ min-height ተቐይሩ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    padding: 20px 15px; /* ኣብ ንኣሽቱ ሞባይላት እቲ ሳጹን ምእንቲ ከይለግብ */
+}
+
+/* 2. Custom Notification Base */
+.pz-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px); 
+    background: rgba(13, 17, 23, 0.95);
+    border: 1px solid var(--pz-border);
+    border-radius: 8px;
+    padding: 12px 24px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pz-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.pz-notif-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Success State for Notification (New) */
+.pz-notification.success {
+    border-color: var(--pz-green);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+}
+.pz-notification.success #pz-notif-icon {
+    color: var(--pz-green);
+    text-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+}
+
+/* Warning State for Notification (New) */
+.pz-notification.warning {
+    border-color: var(--pz-cyan);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+}
+.pz-notification.warning #pz-notif-icon {
+    color: var(--pz-yellow);
+    text-shadow: 0 0 8px rgba(241, 196, 15, 0.5);
+}
+
+#pz-notif-message {
+    color: var(--pz-text);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* 3. Modal Container */
+.pz-auth-overlay {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.pz-auth-modal {
+    position: relative; /* መዕጸዊ X ንምቕማጥ ዘድሊ */
+    width: 100%;
+    max-width: 450px;
+    background: var(--pz-bg);
+    border: 1px solid var(--pz-border);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.08);
+    overflow: hidden;
+    animation: fadeIn 0.4s ease-out;
+    transition: box-shadow var(--pz-hover-speed) ease;
+}
+
+.pz-auth-modal:hover {
+    box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
+}
+
+/* X Close Modal Button Style (New) */
+.pz-close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--pz-gray);
+    font-size: 26px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+    transition: color var(--pz-hover-speed) ease, transform var(--pz-hover-speed) ease;
+}
+
+.pz-close-modal-btn:hover {
+    color: var(--pz-red);
+    transform: scale(1.15);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 4. Logo Section */
+.pz-logo-container {
+    padding: 40px 20px 20px;
+    text-align: center;
+    background: linear-gradient(to bottom, rgba(0, 242, 255, 0.05), transparent);
+}
+
+.pz-logo-text {
+    color: #fff;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.pz-logo-text span {
+    color: var(--pz-cyan);
+    text-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+}
+
+.pz-tagline {
+    color: var(--pz-yellow);
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-top: 5px;
+    font-weight: 700;
+}
+
+/* 5. Tabs */
+.pz-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--pz-border);
+}
+
+.pz-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 15px;
+    color: var(--pz-gray);
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--pz-hover-speed) ease;
+    border-bottom: 3px solid transparent;
+}
+
+.pz-tab.active {
+    color: var(--pz-cyan);
+    border-bottom-color: var(--pz-cyan);
+    background: rgba(0, 242, 255, 0.02);
+}
+
+.pz-tab:hover:not(.active) {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+/* 6. Form Body */
+.pz-form-body {
+    padding: 25px;
+}
+
+.pz-form-pane {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.hidden { display: none !important; }
+
+.pz-row {
+    display: flex;
+    gap: 15px;
+}
+
+.pz-row .pz-input-group {
+    flex: 1;
+}
+
+.pz-input-group {
+    margin-bottom: 20px;
+}
+
+.pz-input-group label {
+    display: block;
+    color: var(--pz-gray);
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+/* Input Fields with hover effects */
+.pz-input-group input, .pz-select {
+    width: 100%;
+    background: #161b22;
+    border: 1px solid var(--pz-border);
+    padding: 12px 15px;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: all var(--pz-hover-speed) ease;
+}
+
+.pz-input-group input:hover, .pz-select:hover {
+    border-color: rgba(0, 242, 255, 0.4);
+}
+
+.pz-input-group input:focus, .pz-select:focus {
+    border-color: var(--pz-cyan);
+    background: #1c2128;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.15);
+}
+
+.pz-select {
+    appearance: none;
+    cursor: pointer;
+}
+
+/* Password eye wrapper */
+.pz-pass-wrapper {
+    position: relative;
+}
+
+.pz-toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--pz-gray);
+    cursor: pointer;
+    font-size: 14px;
+    transition: color var(--pz-hover-speed) ease;
+}
+
+.pz-toggle-eye:hover {
+    color: var(--pz-cyan);
+    text-shadow: 0 0 5px rgba(0, 242, 255, 0.4);
+}
+
+/* Password Checklist */
+.pz-checklist {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.check-item {
+    font-size: 10px;
+    color: #484f58;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color var(--pz-hover-speed) ease;
+}
+
+.check-item i { font-size: 6px; }
+
+.check-item.valid {
+    color: var(--pz-cyan);
+    text-shadow: 0 0 5px rgba(0, 242, 255, 0.3);
+}
+
+/* 7. Buttons */
+.pz-btn-primary, .pz-btn-next, .pz-btn-finish {
+    width: 100%;
+    background: var(--pz-yellow);
+    color: #000;
+    border: none;
+    padding: 14px;
+    border-radius: 4px;
+    font-weight: 900;
+    font-size: 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    transition: all var(--pz-hover-speed) ease; /* Transition speed variable ኾይኑ ኣሎ */
+    box-shadow: 0 4px 0px #b7950b;
+}
+
+.pz-btn-primary:hover, .pz-btn-next:hover, .pz-btn-finish:hover {
+    background: #f4d03f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0px #b7950b, 0 0 15px rgba(241, 196, 15, 0.3);
+}
+
+.pz-btn-primary:active, .pz-btn-next:active, .pz-btn-finish:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0px #b7950b;
+}
+
+.pz-btn-back {
+    background: none;
+    border: 1px solid var(--pz-border);
+    color: var(--pz-gray);
+    padding: 12px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all var(--pz-hover-speed) ease;
+}
+
+.pz-btn-back:hover {
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.pz-action-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Extra Links */
+.pz-extra-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0 15px;
+}
+
+.pz-remember {
+    color: var(--pz-gray);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.pz-forgot {
+    color: var(--pz-cyan);
+    font-size: 12px;
+    text-decoration: none;
+    transition: color var(--pz-hover-speed) ease;
+}
+
+.pz-forgot:hover {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+}
+
+/* 8. Become a Partner Link Styles */
+.pz-partner-container {
+    text-align: center;
+    margin: 10px 0 15px;
+}
+
+.pz-partner-link {
+    color: var(--pz-yellow);
+    font-size: 12.5px;
+    text-decoration: none;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    padding: 2px 0;
+    border-bottom: 1px solid transparent;
+    transition: all var(--pz-hover-speed) ease;
+}
+
+.pz-partner-link:hover {
+    color: #fff;
+    border-bottom-color: var(--pz-yellow);
+    text-shadow: 0 0 12px rgba(241, 196, 15, 0.8);
+}
+
+.pz-partner-title {
+    color: var(--pz-cyan);
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+}
+
+/* 9. Terms Trigger Button */
+.pz-terms-trigger-btn {
+    width: 100%;
+    background: #161b22;
+    border: 1px dashed var(--pz-yellow);
+    color: var(--pz-yellow);
+    padding: 12px;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--pz-hover-speed) ease;
+}
+
+.pz-terms-trigger-btn:hover {
+    background: rgba(241, 196, 15, 0.05);
+    box-shadow: 0 0 12px rgba(241, 196, 15, 0.2);
+    border-color: #fff;
+    color: #fff;
+}
+
+.pz-terms-trigger-btn.verified {
+    border: 1px solid var(--pz-green);
+    color: var(--pz-green);
+    background: rgba(46, 204, 113, 0.08);
+    box-shadow: 0 0 12px rgba(46, 204, 113, 0.2);
+    cursor: default;
+    pointer-events: none; 
+}
+
+/* 10. Terms Scrollbox Container */
+.pz-terms-scrollbox {
+    background: #161b22;
+    border: 1px solid var(--pz-border);
+    border-radius: 6px;
+    padding: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--pz-gray);
+    margin-bottom: 20px;
+}
+
+.pz-terms-scrollbox::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pz-terms-scrollbox::-webkit-scrollbar-track {
+    background: #0d1117;
+}
+
+.pz-terms-scrollbox::-webkit-scrollbar-thumb {
+    background: var(--pz-cyan);
+    border-radius: 3px;
+}
+
+.pz-terms-scrollbox::-webkit-scrollbar-thumb:hover {
+    background: var(--pz-yellow);
+}
+
+.pz-terms-scrollbox p {
+    margin-bottom: 12px;
+}
+
+.pz-terms-scrollbox strong {
+    color: #fff;
+}
+
+/* 11. Camera Container */
+.pz-video-container {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: #000;
+    border: 2px solid var(--pz-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+#cam-overlay {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #161b22;
+    font-size: 50px;
+}
+
+.pz-cam-btn {
+    width: 100%;
+    background: #21262d;
+    color: var(--pz-cyan);
+    border: 1px solid var(--pz-cyan);
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    border-radius: 4px;
+    transition: all var(--pz-hover-speed) ease;
+}
+
+.pz-cam-btn:hover {
+    background: var(--pz-cyan);
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+}
+
+/* 12. File Upload Area & Image Preview Styles */
+.pz-upload-area {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.pz-file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #161b22;
+    border: 1px dashed var(--pz-border);
+    padding: 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--pz-hover-speed) ease;
+}
+
+.pz-file-label:hover {
+    border-color: var(--pz-cyan);
+    background: rgba(0, 242, 255, 0.02);
+}
+
+.pz-file-label i {
+    font-size: 24px;
+    color: var(--pz-gray);
+    margin-bottom: 8px;
+    transition: color var(--pz-hover-speed) ease;
+}
+
+.pz-file-label:hover i {
+    color: var(--pz-cyan);
+}
+
+.pz-file-label span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--pz-gray);
+}
+
+/* File Preview Box Style */
+.pz-file-preview {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    border: 1px solid var(--pz-border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #161b22;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.05);
+    transition: all var(--pz-hover-speed) ease;
+}
+
+.pz-file-preview:hover {
+    border-color: var(--pz-cyan);
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.12);
+}
+
+#pz-file-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    background: #0d1117;
+}
+
+/* Close/Remove Button */
+.pz-remove-file-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--pz-border);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.pz-remove-file-btn:hover {
+    background: var(--pz-red);
+    border-color: var(--pz-red);
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+}
+
+/* 13. Responsive Media Queries for Mobile (Fully Optimized) */
+@media (max-width: 480px) {
+    body {
+        padding: 10px 5px; /* ዝበለጸ ስፔስ ንሞባይላት */
+    }
+    
+    .pz-auth-overlay {
+        padding: 5px;
+    }
+
+    .pz-auth-modal {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+
+    .pz-form-body {
+        padding: 15px; /* ንሞባይል ጽቡቕ ዝኾነ ማእከላይ ስፔስ */
+    }
+
+    .pz-logo-container {
+        padding: 35px 15px 15px;
+    }
+
+    .pz-logo-text {
+        font-size: 28px; /* ዓቐን ፊደላት ኣብ ሞባይል ይንእስ */
+    }
+
+    /* እቶም ጎኒ ንጎኒ ዝነበሩ ሳጹናት ሓደ ኣብ ትሕቲ ሓደ ይሰርዑ */
+    .pz-row {
+        flex-direction: column;
+        gap: 0; 
+    }
+
+    /* Back ን Finish ቡቶናትን ሓደ ኣብ ትሕቲ ሓደ ብስሩዕ ንክሰርሑ */
+    .pz-action-row {
+        flex-direction: column-reverse; 
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .pz-btn-back {
+        width: 100%;
+        text-align: center;
+        padding: 14px;
+    }
+
+    .pz-btn-primary, .pz-btn-next, .pz-btn-finish {
+        margin-top: 5px;
+    }
+
+    .pz-checklist {
+        grid-template-columns: 1fr; /* Password checklist ሓደ መስመር ጥራይ ይኸውን */
+        gap: 6px;
+    }
+}
